@@ -49,9 +49,35 @@ Para esta vez he considerado que no es necesario el uso de TRIGGERS, debido a qu
 impacto en la integridad de la data procesado, debido a que al realizar un `SELECT SEQUENCE FROM DUAL` esta no puede regresar 
 a su valor anterior.
 
+### ETL?
+
+El procedimiento se basa en el concepto de un ETL, esto permite asi poder EXTREAER de ARCHIVOS la informacion, TRANSFORMARLA
+y luego CARGARLA. Lastimosamente eso solo se aplica dentro del SGBD de ORACLE.
+
+### Transaccionalidad?
+
+Si exacto, Transaccionalidad, por medio de la funcion MOD() he logrado obtener el residuo de la operaciones, es necesario que 
+se indique cada cuanto es necesario que se llegue a un estado COMMIT. *[Recomendacion]* NO colocar cantidades demasiado pequenias 
+como 1 o  <10 en el estado commit, esto solo ocacionaria problemas.
+
+### EXECUTE P_CARGA_DATOS([...])
+
+Ejemplo de ejecucion y parametros para ejecutar P_CARGA_DATOS
+
+`P_CARGA_DATOS(`
+`	'[Archivo]',`
+`	'[Direcotrio]',`
+`	'[Separador]',`
+`	'[Transacciones aceptadas]'`
+`);`
+
 ## Lista de cosas por hacer :)
 
+* Testear el procedimiento en distintos servidores
+con distintos archivos para verificar el tiempo
+de ejecucion
 * Buscar una mayor optimizacion
-* Asegurar la transaccionalidad [COMMIT/ROLLBACK]
-
+* Asegurar la transaccionalidad [COMMIT/ROLLBACK] 		[Hecho]
+* Ejemplificar la parte de Transformacion para que 
+el ETL este completo
 

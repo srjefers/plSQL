@@ -1,5 +1,4 @@
 -- [tabla].[campo]%TYPE;
-
 CREATE TABLE CARGA_MASIVA(
     ID_CARGA_MASIVA         INT NOT NULL,
     CADENA_1                VARCHAR2(15) NOT NULL,
@@ -15,8 +14,7 @@ EXECUTE P_CARGA_DATOS('pruebas.txt', 'DP1', '|', 3);
 
 SET SERVEROUTPUT ON;
 -- DECLARE
-CREATE OR REPLACE PROCEDURE P_CARGA_DATOS
-(
+CREATE OR REPLACE PROCEDURE P_CARGA_DATOS(
     ARCHIVO IN VARCHAR2,
     DIRECTORIO IN VARCHAR2,
     SEPARADOR IN VARCHAR2,
@@ -36,6 +34,7 @@ VALIDACION          INTEGER;
 VALIDACION_INI      INTEGER;
 CADENA_CORREGIDA    VARCHAR2(100);
 TRANSACCIONALIDAD   DECIMAL;
+ESTADO              INTEGER;
 BEGIN
     CONT := 0;
     VALIDACION := 0;
@@ -72,6 +71,8 @@ BEGIN
                         INTO CADENA1, CADENA2,
                         CADENA3,CADENA4
                         FROM dual;
+                        
+                        ESTADO := 1;
 
                         /*dbms_output.put_line(CADENA1||'---'||CADENA2||'---'||
                         CADENA3||'---'||CADENA4||'++++');*/
@@ -79,10 +80,11 @@ BEGIN
                         -- En el caso que la primer posicion sea nula, esa se omitira o se 
                         -- procesara de forma distinta
                         dbms_output.put_line('CADENA OMITIDA '||CONT);
+                        
+                        ESTADO := 0;
                     ELSE
                         -- ([cadena erronea], [resultado], [separador])
                         CORRIGE_CADENAS(VALORES, CADENA_CORREGIDA, SEPARADOR);
-                        CORRIGE_CADENAS(CADENA_CORREGIDA, CADENA_CORREGIDA, SEPARADOR);
                         CORRIGE_CADENAS(CADENA_CORREGIDA, CADENA_CORREGIDA, SEPARADOR);
                         SELECT nvl(regexp_substr(CADENA_CORREGIDA, '[^'||SEPARADOR||']+', 1, 1), 'vacia'), 
                             nvl(regexp_substr(CADENA_CORREGIDA, '[^'||SEPARADOR||']+', 1, 2), 'vacia'),
@@ -91,6 +93,8 @@ BEGIN
                         INTO CADENA1, CADENA2,
                         CADENA3,CADENA4
                         FROM dual;
+                        
+                        ESTADO := 1;
                         /*dbms_output.put_line(CADENA1||'---'||CADENA2||'---'||
                         CADENA3||'---'||CADENA4||'++++');*/
                         
@@ -104,9 +108,10 @@ BEGIN
                     */
 
                     /*[----CARGA----]*/
-                    INSERT INTO CARGA_MASIVA VALUES ((SELECT NVL(MAX(ID_CARGA_MASIVA),0)+1 
-                    FROM CARGA_MASIVA), CADENA1, CADENA2, CADENA3, CADENA4);
-
+                    IF ESTADO = 1 THEN
+                        INSERT INTO CARGA_MASIVA VALUES ((SELECT NVL(MAX(ID_CARGA_MASIVA),0)+1 
+                        FROM CARGA_MASIVA), CADENA1, CADENA2, CADENA3, CADENA4);
+                    END IF;
                 END IF;
                 CONT := CONT + 1;
 
@@ -138,6 +143,7 @@ BEGIN
     UTL_FILE.FCLOSE(F1); 
 END;
 /
+
 
 
 
