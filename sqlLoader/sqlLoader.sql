@@ -102,7 +102,7 @@ BEGIN
 
                     /*[----TRANSFORMACION----]*/
                     /*
-                    *
+                    *   Ejemplos de Transformacion de datos mas abajo :)
                     *
                     *
                     */
@@ -156,5 +156,82 @@ CREATE OR REPLACE PROCEDURE CORRIGE_CADENAS (
 AS
 BEGIN
     CADENA_SOLUCION := REGEXP_REPLACE(CADENA_ERRONEA, '(\'||FORMATO_SEPARADOR||'){2,2}', '\2'||FORMATO_SEPARADOR||'0'||FORMATO_SEPARADOR||'');
+END;
+/
+
+/*----Transformacion de fechas----*/
+/*
+* Ambas opcion realizan lo mismo, tranformar una fecha, con la diferencia que
+* la es por milisegundo mas rapida que la primera para poder separar la cadena y obtener el 
+* dia, mes y anio. Dependera del uso que se le desea dar y la informacion que se desea guardar.
+*
+*/
+
+DECLARE
+    fecha_in    DATE;
+    datos       VARCHAR2(15);
+    dia         VARCHAR2(5);
+    mes         VARCHAR2(5);
+    anio        VARCHAR2(5);
+BEGIN
+    fecha_in := '25/09/2018';
+    /*  Distintas formas de almacenar la fecha en varaibles
+    * 
+    */
+    -- SELECT [campo] INTO fecha_in FROM [tabla] WHERE [campo] = 1;
+    -- fecha_in := '25-09-2018';
+    -- fecha_in := '25-SEP-2018';
+    dbms_output.put_line(fecha_in);
+    /* Para que la funcion `TO_CHAR` tenga efecto 
+    *  es necesario que el dato del cual se obtendra la fecha sea de tipo `DATE`
+    *  en dado caso el dato sea de tipo solo un VARCHAR2 la funcion no dara resultados.
+    *  
+    */
+    dbms_output.put_line('------');
+    datos := TO_CHAR(fecha_in, 'DD-MM-YY');
+    dbms_output.put_line(datos);
+    /*
+    *   Obtendra datos especificos separando asi la fecha y luego almacenandola dentro
+    *   de una o varias tablas.
+    */
+    dia := TO_CHAR(fecha_in, 'DD');
+    dbms_output.put_line(dia);
+    dbms_output.put_line('------');
+    
+    mes := TO_CHAR(fecha_in, 'MM');
+    dbms_output.put_line(mes);
+    dbms_output.put_line('------');
+    
+    anio := TO_CHAR(fecha_in, 'YY');
+    dbms_output.put_line(anio);
+    
+END;
+/
+
+DECLARE 
+    fecha_in    DATE;
+    datos       VARCHAR2(15);
+    dia         VARCHAR2(5);
+    mes         VARCHAR2(5);
+    anio        VARCHAR2(5);
+BEGIN
+    fecha_in := '25/09/2018';
+    
+    dbms_output.put_line(fecha_in);
+    
+    SELECT nvl(regexp_substr(fecha_in, '[^/]+', 1, 1), 'vacia'), 
+        nvl(regexp_substr(fecha_in, '[^/]+', 1, 2), 'vacia'),
+        nvl(regexp_substr(fecha_in, '[^/]+', 1, 3), 'vacia')
+    INTO dia, mes, anio
+    FROM dual;                     
+    
+    dbms_output.put_line('------');
+    dbms_output.put_line(dia);
+    dbms_output.put_line('------');
+    dbms_output.put_line(mes);
+    dbms_output.put_line('------');
+    dbms_output.put_line(anio);
+   
+    
 END;
 /
