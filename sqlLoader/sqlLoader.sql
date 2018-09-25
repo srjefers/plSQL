@@ -167,6 +167,7 @@ END;
 *
 */
 
+-- Primer metodo
 DECLARE
     fecha_in    DATE;
     datos       VARCHAR2(15);
@@ -207,7 +208,7 @@ BEGIN
     
 END;
 /
-
+-- Segundo metodo
 DECLARE 
     fecha_in    DATE;
     datos       VARCHAR2(15);
